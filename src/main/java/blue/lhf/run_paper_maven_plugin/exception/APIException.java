@@ -1,4 +1,4 @@
-package blue.lhf.run_paper_maven_plugin.model.exception;
+package blue.lhf.run_paper_maven_plugin.exception;
 
 public class APIException extends RuntimeException {
     public APIException() {

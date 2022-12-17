@@ -13,5 +13,95 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
+    <packaging>maven-plugin</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.7.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <junit.platform.output.capture.stderr>true</junit.platform.output.capture.stderr>
+                        <junit.platform.output.capture.stdout>true</junit.platform.output.capture.stdout>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <!-- argo host repository -->
+        <repository>
+            <id>kenzie</id>
+            <name>Kenzie's Repository</name>
+            <url>https://repo.kenzie.mx/releases</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- json (subset) parsing tools -->
+        <dependency>
+            <groupId>mx.kenzie</groupId>
+            <artifactId>argo</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.3.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- compare minecraft versions -->
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>semver4j</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!-- maven plugin api -->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.8.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- maven plugin mojo annotations -->
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.6.4</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>3.8.5</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

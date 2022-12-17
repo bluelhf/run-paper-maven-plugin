@@ -1,4 +1,4 @@
-package blue.lhf.run_paper_maven_plugin.model;
+package blue.lhf.run_paper_maven_plugin.model.paper;
 
 import com.vdurmont.semver4j.Semver;
 
