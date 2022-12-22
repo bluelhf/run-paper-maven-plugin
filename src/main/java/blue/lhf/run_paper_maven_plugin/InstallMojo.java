@@ -1,19 +1,19 @@
 package blue.lhf.run_paper_maven_plugin;
 
-import blue.lhf.run_paper_maven_plugin.exception.InstallException;
-import blue.lhf.run_paper_maven_plugin.model.Download;
-import blue.lhf.run_paper_maven_plugin.model.paper.PaperAPI;
+import blue.lhf.run_paper_maven_plugin.exception.*;
+import blue.lhf.run_paper_maven_plugin.model.*;
+import blue.lhf.run_paper_maven_plugin.model.paper.*;
 import blue.lhf.run_paper_maven_plugin.util.*;
-import com.google.common.hash.*;
 import com.vdurmont.semver4j.*;
 import org.apache.maven.plugin.*;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.MavenProject;
-import org.slf4j.event.Level;
+import org.apache.maven.project.*;
+import org.slf4j.event.*;
 
 import java.io.*;
 import java.nio.file.*;
+import java.security.*;
 
 import static blue.lhf.run_paper_maven_plugin.util.Configuration.LOGGER;
 import static org.apache.maven.plugins.annotations.InstantiationStrategy.SINGLETON;
@@ -50,11 +50,11 @@ public class InstallMojo extends AbstractMojo {
             }).join();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     protected boolean checkHash(final Path localPath, final String remote) {
         if (Files.notExists(localPath)) return false;
         try {
-            final Hasher hasher = Hashing.sha256().newHasher();
+
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             final long size = Files.size(localPath);
             try (
                 final InputStream stream = Files.newInputStream(localPath);
@@ -66,12 +66,14 @@ public class InstallMojo extends AbstractMojo {
                 int read;
                 while ((read = stream.read(buffer)) != -1) {
                     progressive.addProgress(read);
-                    hasher.putBytes(buffer, 0, read);
+                    digest.digest(buffer, 0, read);
                 }
+            } catch (DigestException e) {
+                LOGGER.warn("An exception occurred while computing the hash", e);
+                return false;
             }
 
-            final String local = hasher.hash().toString();
-
+            final String local = stringify(digest);
             LOGGER.debug("Local  application JAR has SHA-256 hash: %s".formatted(local));
             LOGGER.debug("Remote application JAR has SHA-256 hash: %s".formatted(remote));
 
@@ -85,9 +87,19 @@ public class InstallMojo extends AbstractMojo {
 
         } catch (IOException e) {
             LOGGER.warn("Could not open local application JAR, skipping hash check.");
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.warn("Could not initialise SHA-256 digest, skipping hash check.");
         }
 
         return false;
+    }
+
+    private static final char[] hexDigits = "0123456789abcdef".toCharArray();
+    private static String stringify(final MessageDigest digest) {
+        final byte[] bytes = digest.digest();
+        final StringBuilder sb = new StringBuilder(2 * bytes.length);
+        for (byte b : bytes) sb.append(hexDigits[(b >> 4) & 0xf]).append(hexDigits[b & 0xf]);
+        return sb.toString();
     }
 
     protected void acceptJAR(final Download download) {
