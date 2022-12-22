@@ -1,3 +1,4 @@
+<img align="right" src=".github/assets/logo.svg" width="20%"></img>
 # Run Paper
 Run Paper is a Maven plugin for running [PaperMC/Paper](https://github.com/PaperMC/Paper) servers.
 Its intended purpose is to help with debugging and testing Paper plugins by removing the
