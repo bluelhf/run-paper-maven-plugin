@@ -98,7 +98,7 @@ public class ServerMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Failed to run application", e);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
         }
     }
 }
