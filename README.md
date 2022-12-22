@@ -12,11 +12,11 @@ Run Paper was inspired by
 To use Run Paper, first add the following repository to your POM:
 ```xml
 <pluginRepositories>
-    <repository>
+    <pluginRepository>
         <id>tuonetar-releases</id>
         <name>Ilari's Project Repository</name>
         <url>https://maven.lhf.blue/releases</url>
-    </repository>
+    </pluginRepository>
 </pluginRepositories>
 ```
 Then, add this plugin declaration to your POM
