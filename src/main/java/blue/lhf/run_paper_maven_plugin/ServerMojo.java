@@ -1,19 +1,12 @@
 package blue.lhf.run_paper_maven_plugin;
 
-import blue.lhf.run_paper_maven_plugin.util.Configuration;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.lifecycle.internal.*;
-import org.apache.maven.model.Plugin;
+import blue.lhf.run_paper_maven_plugin.util.*;
 import org.apache.maven.plugin.*;
-import org.apache.maven.plugin.descriptor.MojoDescriptor;
-import org.apache.maven.plugin.prefix.NoPluginFoundForPrefixException;
-import org.apache.maven.plugin.version.PluginVersionResolutionException;
-import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.jar.JarMojo;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.project.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 @Mojo(name = "run-server", requiresProject = false, threadSafe = true)
