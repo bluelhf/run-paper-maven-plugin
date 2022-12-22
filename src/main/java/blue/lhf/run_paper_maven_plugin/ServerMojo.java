@@ -50,9 +50,6 @@ public class ServerMojo extends AbstractMojo {
     @Parameter(readonly = true, defaultValue = "${project}")
     protected MavenProject project;
 
-    @Parameter(defaultValue = "${session}", readonly = true)
-    private MavenSession session;
-
     @Parameter(name = "serverDirectory", defaultValue = "mc_server")
     protected String serverDirectory;
 
@@ -71,18 +68,8 @@ public class ServerMojo extends AbstractMojo {
     @Parameter(name = "includeDefaultServerFlags", defaultValue = "true")
     protected boolean includeDefaultServerFlags = true;
 
-    @Parameter(name = "includePluginFlag", defaultValue = "true")
-    protected boolean includePluginFlag;
-
-
-    @Component
-    private BuildPluginManager pluginManager;
-
-
-
-    @Component
-    private MojoDescriptorCreator creator;
-
+    @Parameter(name = "pluginPath", defaultValue = "${project.build.finalName}.jar")
+    protected String pluginPath;
 
     public List<String> getJvmBaseFlags() {
         return includeDefaultJvmFlags ? JVM_DEFAULTS : List.of();
@@ -103,11 +90,11 @@ public class ServerMojo extends AbstractMojo {
         command.add(Configuration.getServerPath(project, serverDirectory).toAbsolutePath().toString());
 
         command.addAll(getServerBaseFlags());
-        if (includePluginFlag) {
-            command.add("--add-plugin");
-            command.add(Configuration.getOutputDirectory(project).resolve(project.getBuild().getFinalName() + ".jar").toAbsolutePath().toString());
-        }
         command.addAll(Arrays.asList(this.serverFlags));
+        if (pluginPath != null && !pluginPath.equalsIgnoreCase("null")) {
+            command.add("--add-plugin");
+            command.add(Configuration.getOutputDirectory(project).resolve(pluginPath).toAbsolutePath().toString());
+        }
 
         try {
             final Process process = new ProcessBuilder()
