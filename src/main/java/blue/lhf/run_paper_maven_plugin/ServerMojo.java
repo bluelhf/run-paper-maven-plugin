@@ -41,7 +41,8 @@ public class ServerMojo extends AbstractMojo {
         "-XX:+PerfDisableSharedMem",
         "-XX:MaxTenuringThreshold=1",
         "-Dusing.aikars.flags=https://mcflags.emc.gs",
-        "-Daikars.new.flags=true"
+        "-Daikars.new.flags=true",
+        "-Ddisable.watchdog=true"
     );
 
     protected static final List<String> SERVER_DEFAULTS = List.of("--nogui");
