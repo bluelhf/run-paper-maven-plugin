@@ -19,7 +19,7 @@ public class Configuration {
     }
 
     public static Path getOutputDirectory(final @Nullable MavenProject project) {
-        return Path.of(project != null ? project.getBuild().getDirectory() : ".");
+        return Path.of(project != null ? project.getBuild().getDirectory() : "target");
     }
 
     public static Path getServerDirectory(final @Nullable MavenProject project, final String serverDirectory) {
