@@ -70,14 +70,13 @@ public class InstallMojo extends AbstractMojo {
         if (Files.notExists(localPath)) return false;
         try {
 
-            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             final long size = Files.size(localPath);
+            final String local;
             try (final Progressive progressive = Progressive.ofSize(Level.DEBUG,
                     "Computing local application hash...", size)) {
-                sha256(Files.newInputStream(localPath), progressive::addProgress);
+                local = sha256(Files.newInputStream(localPath), progressive::addProgress);
             }
 
-            final String local = stringify(digest.digest());
             LOGGER.debug("Local  application JAR has SHA-256 hash: %s".formatted(local));
             LOGGER.debug("Remote application JAR has SHA-256 hash: %s".formatted(remote));
 
