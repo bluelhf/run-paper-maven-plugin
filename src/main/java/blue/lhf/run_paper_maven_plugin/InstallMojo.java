@@ -14,6 +14,7 @@ import org.slf4j.event.*;
 import java.io.*;
 import java.nio.file.*;
 import java.security.*;
+import java.util.function.Consumer;
 
 import static blue.lhf.run_paper_maven_plugin.util.Configuration.LOGGER;
 import static org.apache.maven.plugins.annotations.InstantiationStrategy.SINGLETON;
@@ -50,30 +51,33 @@ public class InstallMojo extends AbstractMojo {
             }).join();
     }
 
+    protected static String sha256(final InputStream stream, Consumer<Integer> onUpdate) throws NoSuchAlgorithmException, IOException {
+        final MessageDigest message = MessageDigest.getInstance("SHA-256");
+        try (final InputStream is = stream) {
+            byte[] buffer = new byte[16777216];
+
+            int read;
+            while ((read = is.read(buffer)) != -1) {
+                if (onUpdate != null) onUpdate.accept(read);
+                message.update(buffer, 0, read);
+            }
+        }
+
+        return stringify(message.digest());
+    }
+
     protected boolean checkHash(final Path localPath, final String remote) {
         if (Files.notExists(localPath)) return false;
         try {
 
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             final long size = Files.size(localPath);
-            try (
-                final InputStream stream = Files.newInputStream(localPath);
-                final Progressive progressive = Progressive.ofSize(Level.DEBUG,
-                    "Computing local application hash...", size)
-            ) {
-                byte[] buffer = new byte[16777216];
-
-                int read;
-                while ((read = stream.read(buffer)) != -1) {
-                    progressive.addProgress(read);
-                    digest.digest(buffer, 0, read);
-                }
-            } catch (DigestException e) {
-                LOGGER.warn("An exception occurred while computing the hash", e);
-                return false;
+            try (final Progressive progressive = Progressive.ofSize(Level.DEBUG,
+                    "Computing local application hash...", size)) {
+                sha256(Files.newInputStream(localPath), progressive::addProgress);
             }
 
-            final String local = stringify(digest);
+            final String local = stringify(digest.digest());
             LOGGER.debug("Local  application JAR has SHA-256 hash: %s".formatted(local));
             LOGGER.debug("Remote application JAR has SHA-256 hash: %s".formatted(remote));
 
@@ -95,8 +99,7 @@ public class InstallMojo extends AbstractMojo {
     }
 
     private static final char[] hexDigits = "0123456789abcdef".toCharArray();
-    private static String stringify(final MessageDigest digest) {
-        final byte[] bytes = digest.digest();
+    private static String stringify(final byte[] bytes) {
         final StringBuilder sb = new StringBuilder(2 * bytes.length);
         for (byte b : bytes) sb.append(hexDigits[(b >> 4) & 0xf]).append(hexDigits[b & 0xf]);
         return sb.toString();
