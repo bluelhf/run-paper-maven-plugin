@@ -24,7 +24,7 @@ Then, add this plugin declaration to your POM
 <plugin>
     <groupId>blue.lhf</groupId>
     <artifactId>run-paper-maven-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <configuration>
         <!-- See below for the configuration to put here -->
     </configuration>
@@ -89,8 +89,8 @@ java --help-extra
 ### Default JVM Flags
 By default, the following command-line flags are passed to the JVM:
 ```
--Xms10G
--Xmx10G
+-Xms3G
+-Xmx3G
 -XX:+UseG1GC
 -XX:+ParallelRefProcEnabled
 -XX:MaxGCPauseMillis=200
@@ -107,13 +107,15 @@ By default, the following command-line flags are passed to the JVM:
 -XX:G1MixedGCLiveThresholdPercent=90
 -XX:G1RSetUpdatingPauseTimePercent=5
 -XX:SurvivorRatio=32
--XX:+PerfDisableSharedMem
 -XX:MaxTenuringThreshold=1
 -Dusing.aikars.flags=https://mcflags.emc.gs
 -Daikars.new.flags=true
 -Ddisable.watchdog=true
 ```
-These flags are equivalent to Aikar's recommended server flags, barring the addition of `-Ddisable.watchdog=true`, which disables the Paper watchdog.
+These flags are equivalent to Aikar's recommended server flags, barring the following modifications:
+- Addition of `-Ddisable.watchdog=true`, which disables the Paper watchdog,
+- Removal of `-XX:+PerfDisableSharedMem`, which prevents profilers from discovering the process.
+- `-Xm[xs]3G` instead of `-Xm[xs]10G`, for memory-limited development.
 
 ## The Server Flags
 These are options intended for the Minecraft server itself. They are a bit more readily understandable,
