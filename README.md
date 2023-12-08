@@ -13,7 +13,7 @@ To use Run Paper, first add the following repository to your POM:
 ```xml
 <pluginRepositories>
     <pluginRepository>
-        <id>tuonetar-releases</id>
+        <id>kiputyttö-releases</id>
         <name>Ilari's Project Repository</name>
         <url>https://maven.lhf.blue/releases</url>
     </pluginRepository>
