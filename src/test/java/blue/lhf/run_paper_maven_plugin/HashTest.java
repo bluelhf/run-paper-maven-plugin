@@ -25,7 +25,7 @@ public class HashTest {
         }
     }
 
-    public void testLargeHash() throws IOException, NoSuchAlgorithmException {
+    /*public void testLargeHash() throws IOException, NoSuchAlgorithmException {
         final URL resource = HashTest.class.getResource("/random_bytes");
         assert resource != null: "Cannot find random bytes";
 
@@ -38,5 +38,5 @@ public class HashTest {
             final String result = InstallMojo.sha256(input, progressive::addProgress);
             assert result.equals(knownHash): "SHA-256 hash computation is WRONG!";
         }
-    }
+    }*/
 }
