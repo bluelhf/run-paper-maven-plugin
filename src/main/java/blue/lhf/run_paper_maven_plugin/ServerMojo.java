@@ -61,7 +61,7 @@ public class ServerMojo extends AbstractMojo {
     protected boolean includeDefaultServerFlags = true;
 
     @Parameter(name = "pluginPath", defaultValue = "${project.build.finalName}.jar")
-    protected String pluginPath;
+    protected String[] pluginPath = new String[] {"${project.build.finalName}.jar"};
 
     public List<String> getJvmBaseFlags() {
         return includeDefaultJvmFlags ? JVM_DEFAULTS : List.of();
@@ -83,9 +83,11 @@ public class ServerMojo extends AbstractMojo {
 
         command.addAll(getServerBaseFlags());
         command.addAll(Arrays.asList(this.serverFlags));
-        if (pluginPath != null && !pluginPath.equalsIgnoreCase("null")) {
-            command.add("--add-plugin");
-            command.add(Configuration.getOutputDirectory(project).resolve(pluginPath).toAbsolutePath().toString());
+        for(String pluginpath : pluginPath) {
+            if (pluginpath != null && !pluginpath.equalsIgnoreCase("null")) {
+                command.add("--add-plugin");
+                command.add(Configuration.getOutputDirectory(project).resolve(pluginpath).toAbsolutePath().toString());
+            }
         }
 
         try {
