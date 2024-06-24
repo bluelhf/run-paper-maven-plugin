@@ -4,7 +4,6 @@ import blue.lhf.run_paper_maven_plugin.exception.*;
 import blue.lhf.run_paper_maven_plugin.model.*;
 import blue.lhf.run_paper_maven_plugin.model.paper.*;
 import blue.lhf.run_paper_maven_plugin.util.*;
-import com.vdurmont.semver4j.*;
 import org.apache.maven.plugin.*;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.*;
@@ -31,19 +30,9 @@ public class InstallMojo extends AbstractMojo {
     @Parameter(name = "serverDirectory", defaultValue = "mc_server")
     protected String serverDirectory;
 
-    public final Semver parseVersion() throws MojoExecutionException {
-        try {
-            return new Semver(minecraftVersion);
-        } catch (SemverException exception) {
-            throw new MojoExecutionException("Invalid version: %s".formatted(minecraftVersion), exception);
-        }
-    }
-
     @Override
-    public void execute() throws MojoExecutionException {
-        final Semver version = parseVersion();
-
-        PaperAPI.get().fetchBuilds(version).thenCompose(builds ->
+    public void execute() {
+        PaperAPI.get().fetchBuilds(minecraftVersion).thenCompose(builds ->
             PaperAPI.get().fetchApplication(builds.last()))
             .thenAcceptAsync(this::acceptJAR)
             .exceptionally(exception -> {

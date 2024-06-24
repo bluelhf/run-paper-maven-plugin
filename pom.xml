@@ -62,13 +62,6 @@
             <version>1.1.7</version>
         </dependency>
 
-        <!-- compare minecraft versions -->
-        <dependency>
-            <groupId>com.vdurmont</groupId>
-            <artifactId>semver4j</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-
         <!-- maven plugin api -->
         <dependency>
             <groupId>org.apache.maven</groupId>

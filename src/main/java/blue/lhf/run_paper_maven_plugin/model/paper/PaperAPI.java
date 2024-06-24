@@ -2,7 +2,6 @@ package blue.lhf.run_paper_maven_plugin.model.paper;
 
 import blue.lhf.run_paper_maven_plugin.model.*;
 import blue.lhf.run_paper_maven_plugin.exception.APIException;
-import com.vdurmont.semver4j.Semver;
 import mx.kenzie.argo.*;
 
 import java.io.*;
@@ -53,9 +52,9 @@ public class PaperAPI {
         }
 
         @Override
-        public CompletableFuture<SortedSet<Build>> fetchBuilds(Semver version) throws APIException {
+        public CompletableFuture<SortedSet<Build>> fetchBuilds(String version) throws APIException {
             final HttpRequest request = HttpRequest.newBuilder()
-                .GET().uri(VERSIONS_BASE.resolve(version.toString()))
+                .GET().uri(VERSIONS_BASE.resolve(version))
                 .build();
 
             final CompletableFuture<HttpResponse<InputStream>> future = client.sendAsync(request, ofInputStream());

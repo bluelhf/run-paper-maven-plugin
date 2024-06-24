@@ -1,12 +1,11 @@
 package blue.lhf.run_paper_maven_plugin.model.paper;
 
-import com.vdurmont.semver4j.Semver;
+import java.util.Objects;
 
-public record Build(Semver version, int identifier) implements Comparable<Build> {
+public record Build(String version, int identifier) implements Comparable<Build> {
     @Override
     public int compareTo(Build o) {
-        final int versionComparison = version.compareTo(o.version);
-        if (versionComparison != 0) return versionComparison;
+        if (!Objects.equals(version, o.version)) throw new IllegalArgumentException("Cannot compare builds of different versions");
         return Long.compare(identifier, o.identifier);
     }
 }
