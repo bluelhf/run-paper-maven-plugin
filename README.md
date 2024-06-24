@@ -24,7 +24,7 @@ Then, add this plugin declaration to your POM
 <plugin>
     <groupId>blue.lhf</groupId>
     <artifactId>run-paper-maven-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <configuration>
         <!-- See below for the configuration to put here -->
     </configuration>
