@@ -41,19 +41,25 @@ Here's an example configuration. **Only use it if you AGREE to the [EULA](https:
 <minecraftVersion>1.19.3</minecraftVersion>
 <acceptEula>true</acceptEula>
 <serverDirectory>run</serverDirectory>
-<jvmFlags>
-    <flag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6969</flag>
-</jvmFlags>
+<hotswap>true</hotswap>
 ```
 
 This configuration is doing a few things:
 1. It chooses the Minecraft version 1.19.3.
 2. It accepts the end-user licence agreement.
 3. It tells Run Paper to put the server in the `run/` directory.
-4. It adds a JVM flag for **debugging.**
-   - The JVM listens on port 6969 for debugging commands.
-   - IDEA shows a prompt in the output when a debugging server is detected.
-     This prompt can be clicked to start the debugger.
+4. It enables **hot-swapping**.
+    - Hot-swapping allows you to change your code and press a button in the IDE to see
+      the changes on your Minecraft server automatically, all without restarting or using `/reload`.
+    - When the server is started with hot-swapping enabled, IDEA will show a tooltip next to the first
+      few console lines prompting you to **attach a debugger**.
+    - With the debugger attached, changing the code shows an icon at the top right of the IDE, prompting you to
+      reload the changed code.
+    - For other IDEs and tools, configure them to attach to a remote debugger on port **5005**.
+    - Enabling hot-swapping causes the plugin to, upon `run-paper:install`, automatically download
+      a JetBrains Runtime as well as [HotswapAgent](https://hotswapagent.org). It uses the JetBrains
+      runtime to start the server, injects the hotswap agent, and enables the debugger connection.
+    - The runtime and agent are stored in your local maven repository as well as in the server's `.hotswap` directory.
 
 ### Accepted Configuration Parameters
 | Name                         | Parameter                   | Description                                                                                 | Default                          | Additional Information                                                                                                                      |
@@ -65,6 +71,36 @@ This configuration is doing a few things:
 | Server Flags                 | `serverFlags`               | A list of flags to be passed to the server itself.                                          | None                             | There are some default server flags. See `includeDefaultServerFlags` for instructions on disabling them.                                    |                                                                                                                                             |
 | Accept EULA                  | `acceptEula`                | Whether or not the Minecraft EULA should be accepted automatically.                         | `false`                          | Sets the `com.mojang.eula.agree` property. Can also be accepted using the file that's generated, but the server won't work on first launch. |
 | Plugin Path                  | `pluginPath`                | The path to a plugin to be loaded on the server, alongside the server itself.               | `${project.build.finalName}.jar` | Path is relative to the output directory of the project, or `target` if not specified. `null` can be used to disable the feature.           |
+| Hot Swap                     | `hotswap`                   | Enables hot-swapping functionality described above.                                         | `false`                          | Hot Swap can also be given additional configuration options, showcased below.                                                               |
+
+#### Hot Swap Configuration Parameters
+| Name             | Parameter         | Description                                                                                         | Default                                                                | Additional Information                                                                           |
+|------------------|-------------------|-----------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| Runtime          | `runtime`         | A dependency declaration like in `dependencies`, allows choosing a different JVM for hotswapping.   | See below.                                                             | Must be a dependecy declaration with type `tgz`. Supports version ranges.                        |
+| Agent            | `agent`           | A dependency declaration like in `dependencies`, allows choosing a different agent for hotswapping. | See below.                                                             | Must be a dependecy declaration with type `jar`. Supports version ranges.                        |
+| Debug Flag       | `debugFlag`       | The JVM flag to use to connect a debugger.                                                          | `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005` | May be left blank to not open a debugger connection.                                             |
+| Output Directory | `outputDirectory` | The directory under the server directory to which the runtime and agent should be extracted.        | `.hotswap`                                                             | The extracted runtime will be under `jbr/`, and the extracted agent will be `hotswap-agent.jar`. | 
+
+**Default value for runtime**
+```xml
+<runtime>
+    <groupId>com.jetbrains.jdk</groupId>
+    <artifactId>jbr</artifactId>
+    <version>[0,)</version> <!-- means latest version -->
+    <type>tgz</type>
+</runtime>
+```
+**Default value for agent**
+```xml
+<agent>
+    <groupId>org.hotswapagent</groupId>
+    <artifactId>hotswap-agent</artifactId>
+    <version>[0,)</version> <!-- means latest version -->
+    <type>jar</type>
+</agent>
+```
+Both of these will be resolved from the `pluginRepositories` you have declared, as well as
+from Maven Central (https://repo.maven.apache.org/maven2/) and Itemis Cloud MPS (https://artifacts.itemis.cloud/repository/maven-mps/).
 
 # Customising Flags
 By default, several options are passed to both the Java Virtual Machine and the Minecraft server that runs on it using **flags.**
@@ -78,7 +114,7 @@ defaults for Paper servers are provided.
 
 The JVM flags can also interact with the server itself, through **system properties**. These always start with `-D`.
 Generally, system properties are reserved for thing that should **not** be changed without a deep understanding of
-the workings of the server -- just like the rest of the JVM flags, aside from something like `-Xmx`.
+the workings of the server — just like the rest of the JVM flags, aside from something like `-Xmx`.
 
 To get the available JVM flags, Java may be executed as follows:
 ```
