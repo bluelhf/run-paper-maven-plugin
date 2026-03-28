@@ -26,6 +26,10 @@ public class Configuration {
         return getOutputDirectory(project).resolve(serverDirectory);
     }
 
+    public static Path getHotswapDirectory(final @Nullable MavenProject project, final String serverDirectory) {
+        return getServerDirectory(project, serverDirectory).resolve(".hotswap");
+    }
+
     public static Path obtainServerDirectory(final @Nullable MavenProject project,
                                              final String serverDirectory) throws MojoExecutionException {
 

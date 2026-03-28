@@ -1,18 +1,39 @@
 package blue.lhf.run_paper_maven_plugin;
 
-import blue.lhf.run_paper_maven_plugin.exception.*;
-import blue.lhf.run_paper_maven_plugin.model.*;
-import blue.lhf.run_paper_maven_plugin.model.paper.*;
-import blue.lhf.run_paper_maven_plugin.util.*;
-import org.apache.maven.plugin.*;
+import blue.lhf.run_paper_maven_plugin.exception.InstallException;
+import blue.lhf.run_paper_maven_plugin.model.Download;
+import blue.lhf.run_paper_maven_plugin.model.paper.PaperAPI;
+import blue.lhf.run_paper_maven_plugin.util.Configuration;
+import blue.lhf.run_paper_maven_plugin.util.HotswapConfiguration;
+import blue.lhf.run_paper_maven_plugin.util.HotswapDownloader;
+import blue.lhf.run_paper_maven_plugin.util.Progressive;
+import blue.lhf.run_paper_maven_plugin.util.ProgressiveTransferListener;
+import org.apache.maven.RepositoryUtils;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.*;
-import org.slf4j.event.*;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.VersionRangeResolutionException;
+import org.slf4j.event.Level;
 
-import java.io.*;
-import java.nio.file.*;
-import java.security.*;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static blue.lhf.run_paper_maven_plugin.util.Configuration.LOGGER;
@@ -20,6 +41,18 @@ import static org.apache.maven.plugins.annotations.InstantiationStrategy.SINGLET
 
 @Mojo(name = "install", instantiationStrategy = SINGLETON, requiresOnline = true, threadSafe = true)
 public class InstallMojo extends AbstractMojo {
+
+    @Inject
+    private HotswapDownloader downloader;
+
+    @Component
+    private RepositorySystem repoSystem;
+
+    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+    private RepositorySystemSession repoSession;
+
+    @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true)
+    private List<MavenArtifactRepository> remoteRepositories;
 
     @Parameter(property = "minecraftVersion", required = true)
     protected String minecraftVersion;
@@ -30,14 +63,33 @@ public class InstallMojo extends AbstractMojo {
     @Parameter(name = "serverDirectory", defaultValue = "mc_server")
     protected String serverDirectory;
 
+    @Parameter(name = "hotswap")
+    protected HotswapConfiguration hotswap = HotswapConfiguration.disabled();
+
     @Override
-    public void execute() {
+    public void execute() throws MojoExecutionException {
         PaperAPI.get().fetchBuilds(minecraftVersion).thenCompose(builds ->
             PaperAPI.get().fetchApplication(builds.last()))
             .thenAcceptAsync(this::acceptJAR)
             .exceptionally(exception -> {
                 throw new RuntimeException(new MojoExecutionException("An exception occurred while downloading the application JAR", exception));
             }).join();
+
+        if (hotswap.isEnabled()) {
+            LOGGER.info("Requested hot-swap, downloading...");
+            try {
+                final Path outputDirectory = Configuration.getHotswapDirectory(project, serverDirectory);
+                final List<RemoteRepository> remotes = new ArrayList<>();
+                for (final MavenArtifactRepository mavenArtifactRepository : remoteRepositories) {
+                    remotes.add(RepositoryUtils.toRepo(mavenArtifactRepository));
+                }
+                final DefaultRepositorySystemSession session = new DefaultRepositorySystemSession(repoSession);
+                session.setTransferListener(new ProgressiveTransferListener());
+                downloader.download(session, hotswap, outputDirectory, remotes);
+            } catch (VersionRangeResolutionException | ArtifactResolutionException | IOException e) {
+                throw new MojoExecutionException("An exception occurred while downloading the runtime", e);
+            }
+        }
     }
 
     protected static String sha256(final InputStream stream, Consumer<Integer> onUpdate) throws NoSuchAlgorithmException, IOException {

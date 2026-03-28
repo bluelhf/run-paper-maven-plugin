@@ -1,13 +1,20 @@
 package blue.lhf.run_paper_maven_plugin;
 
-import blue.lhf.run_paper_maven_plugin.util.*;
-import org.apache.maven.plugin.*;
+import blue.lhf.run_paper_maven_plugin.util.Configuration;
+import blue.lhf.run_paper_maven_plugin.util.HotswapConfiguration;
+import blue.lhf.run_paper_maven_plugin.util.HotswapDownloader;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.*;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
-import java.io.*;
-import java.util.*;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Mojo(name = "run-server", requiresProject = false, threadSafe = true)
 public class ServerMojo extends AbstractMojo {
@@ -63,8 +70,17 @@ public class ServerMojo extends AbstractMojo {
     @Parameter(name = "pluginPath", defaultValue = "${project.build.finalName}.jar")
     protected String[] pluginPath = new String[] {"${project.build.finalName}.jar"};
 
+    @Inject
+    private HotswapDownloader downloader;
+
+    @Parameter(name = "hotswap")
+    protected HotswapConfiguration hotswap = HotswapConfiguration.disabled();
+
     public List<String> getJvmBaseFlags() {
-        return includeDefaultJvmFlags ? JVM_DEFAULTS : List.of();
+        final List<String> withoutHotswap = includeDefaultJvmFlags ? JVM_DEFAULTS : List.of();
+        final List<String> withHotswap = new ArrayList<>(withoutHotswap);
+        if (hotswap.isEnabled()) withHotswap.add(hotswap.getDebugFlag());
+        return withHotswap;
     }
 
     public List<String> getServerBaseFlags() {
@@ -73,7 +89,18 @@ public class ServerMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        final List<String> command = new ArrayList<>(List.of(ProcessHandle.current().info().command().orElse("java")));
+        String javaExecutable = ProcessHandle.current().info().command().orElse("java");
+        if (hotswap.isEnabled()) {
+            final HotswapDownloader.Result paths = downloader.getPaths(Configuration.getHotswapDirectory(project, serverDirectory));
+            final Path javaPath;
+            try {
+                javaPath = paths.findJavaExecutable();
+                javaExecutable = javaPath.toAbsolutePath().toString();
+            } catch (IOException e) {
+                throw new MojoExecutionException("Could not find Java executable", e);
+            }
+        }
+        final List<String> command = new ArrayList<>(List.of(javaExecutable));
         command.addAll(getJvmBaseFlags());
         if (acceptEula)
             command.add("-Dcom.mojang.eula.agree=true");
