@@ -91,7 +91,7 @@ public class ServerMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         String javaExecutable = ProcessHandle.current().info().command().orElse("java");
         if (hotswap.isEnabled()) {
-            final HotswapDownloader.Result paths = downloader.getPaths(Configuration.getHotswapDirectory(project, serverDirectory));
+            final HotswapDownloader.Result paths = downloader.getPaths(Configuration.getHotswapDirectory(project, serverDirectory, hotswap));
             final Path javaPath;
             try {
                 javaPath = paths.findJavaExecutable();

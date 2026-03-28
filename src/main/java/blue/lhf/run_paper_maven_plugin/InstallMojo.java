@@ -78,7 +78,7 @@ public class InstallMojo extends AbstractMojo {
         if (hotswap.isEnabled()) {
             LOGGER.info("Requested hot-swap, downloading...");
             try {
-                final Path outputDirectory = Configuration.getHotswapDirectory(project, serverDirectory);
+                final Path outputDirectory = Configuration.getHotswapDirectory(project, serverDirectory, hotswap);
                 final List<RemoteRepository> remotes = new ArrayList<>();
                 for (final MavenArtifactRepository mavenArtifactRepository : remoteRepositories) {
                     remotes.add(RepositoryUtils.toRepo(mavenArtifactRepository));
