@@ -51,8 +51,8 @@ public class InstallMojo extends AbstractMojo {
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
     private RepositorySystemSession repoSession;
 
-    @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true)
-    private List<MavenArtifactRepository> remoteRepositories;
+    @Parameter(defaultValue = "${project.pluginArtifactRepositories}", readonly = true)
+    private List<MavenArtifactRepository> pluginRepositories;
 
     @Parameter(property = "minecraftVersion", required = true)
     protected String minecraftVersion;
@@ -80,7 +80,7 @@ public class InstallMojo extends AbstractMojo {
             try {
                 final Path outputDirectory = Configuration.getHotswapDirectory(project, serverDirectory, hotswap);
                 final List<RemoteRepository> remotes = new ArrayList<>();
-                for (final MavenArtifactRepository mavenArtifactRepository : remoteRepositories) {
+                for (final MavenArtifactRepository mavenArtifactRepository : pluginRepositories) {
                     remotes.add(RepositoryUtils.toRepo(mavenArtifactRepository));
                 }
                 final DefaultRepositorySystemSession session = new DefaultRepositorySystemSession(repoSession);
