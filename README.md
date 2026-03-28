@@ -24,7 +24,7 @@ Then, add this plugin declaration to your POM
 <plugin>
     <groupId>blue.lhf</groupId>
     <artifactId>run-paper-maven-plugin</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <configuration>
         <!-- See below for the configuration to put here -->
     </configuration>
@@ -38,7 +38,7 @@ agreement (EULA) must be accepted.
 
 Here's an example configuration. **Only use it if you AGREE to the [EULA](https://www.minecraft.net/en-us/eula)!**
 ```xml
-<minecraftVersion>1.19.3</minecraftVersion>
+<minecraftVersion>1.21.11</minecraftVersion>
 <acceptEula>true</acceptEula>
 <serverDirectory>run</serverDirectory>
 <hotswap>true</hotswap>
