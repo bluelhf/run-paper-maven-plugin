@@ -6,7 +6,7 @@
 
     <groupId>blue.lhf</groupId>
     <artifactId>run-paper-maven-plugin</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <distributionManagement>
         <repository>
@@ -33,6 +33,7 @@
                 <configuration>
                     <streamLogs>true</streamLogs>
                     <cloneClean>false</cloneClean>
+                    <debug>false</debug>
                     <properties>
                         <invoker.plugin.version>${project.version}</invoker.plugin.version>
                     </properties>
