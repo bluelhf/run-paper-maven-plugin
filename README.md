@@ -24,7 +24,7 @@ Then, add this plugin declaration to your POM
 <plugin>
     <groupId>blue.lhf</groupId>
     <artifactId>run-paper-maven-plugin</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <configuration>
         <!-- See below for the configuration to put here -->
     </configuration>
@@ -37,15 +37,16 @@ Minecraft version must be provided. Additionally, Minecraft's end-user licence
 agreement (EULA) must be accepted.
 
 Here's an example configuration. **Only use it if you AGREE to the [EULA](https://www.minecraft.net/en-us/eula)!**
+<!-- VERSION-REPLACE 26.1.2 -->
 ```xml
-<minecraftVersion>1.21.11</minecraftVersion>
+<minecraftVersion>26.1.2</minecraftVersion>
 <acceptEula>true</acceptEula>
 <serverDirectory>run</serverDirectory>
 <hotswap>true</hotswap>
 ```
-
+<!-- /VERSION-REPLACE -->
 This configuration is doing a few things:
-1. It chooses the Minecraft version 1.19.3.
+1. It chooses the Minecraft version <!-- VERSION-REPLACE 26.1.2 -->26.1.2<!-- /VERSION-REPLACE -->.
 2. It accepts the end-user licence agreement.
 3. It tells Run Paper to put the server in the `run/` directory.
 4. It enables **hot-swapping**.
@@ -168,3 +169,21 @@ By default, the following command-line flags are passed to the server:
 --nogui
 ```
 The `--nogui` flag disables the server's GUI.
+
+
+## Development
+
+There is a tool, `tools/ReadmeVersion.java`, which is a JDK 25 source file for
+automatically replacing the Minecraft versions referenced in `README.md` with a new value.
+```shell
+$ java tools/ReadmeVersion.java --help                                                                                                                                                       
+ReadmeVersion - script for replacing <!-- VERSION-REPLACE --> comments in README.md                                                                                                                                               
+
+Usage: java ReadmeVersion.java <new version> [target file]
+
+Examples (Bourne shell):
+  java ReadmeVersion.java 27.1.1 README.md
+  java ReadmeVersion.java 26.1.2
+  java ReadmeVersion.java "this is a version" ../OtherProject/README.md
+$
+```
