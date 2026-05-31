@@ -84,12 +84,14 @@ This configuration is doing a few things:
 | Hot Swap                     | `hotswap`                   | Enables hot-swapping functionality described above.                                                                                      | `false`                          | Hot Swap can also be given additional configuration options, showcased below.                                                               |
 
 #### Hot Swap Configuration Parameters
-| Name             | Parameter         | Description                                                                                         | Default                                                                | Additional Information                                                                           |
-|------------------|-------------------|-----------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| Runtime          | `runtime`         | A dependency declaration like in `dependencies`, allows choosing a different JVM for hotswapping.   | See below.                                                             | Must be a dependecy declaration with type `tgz`. Supports version ranges.                        |
-| Agent            | `agent`           | A dependency declaration like in `dependencies`, allows choosing a different agent for hotswapping. | See below.                                                             | Must be a dependecy declaration with type `jar`. Supports version ranges.                        |
-| Debug Flag       | `debugFlag`       | The JVM flag to use to connect a debugger.                                                          | `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005` | May be left blank to not open a debugger connection.                                             |
-| Output Directory | `outputDirectory` | The directory under the server directory to which the runtime and agent should be extracted.        | `.hotswap`                                                             | The extracted runtime will be under `jbr/`, and the extracted agent will be `hotswap-agent.jar`. | 
+| Name             | Parameter         | Description                                                                                         | Default    | Additional Information                                                                           |
+|------------------|-------------------|-----------------------------------------------------------------------------------------------------|------------|--------------------------------------------------------------------------------------------------|
+| Runtime          | `runtime`         | A dependency declaration like in `dependencies`, allows choosing a different JVM for hotswapping.   | See below. | Must be a dependecy declaration with type `tgz`. Supports version ranges.                        |
+| Agent            | `agent`           | A dependency declaration like in `dependencies`, allows choosing a different agent for hotswapping. | See below. | Must be a dependecy declaration with type `jar`. Supports version ranges.                        |
+| Debug Flag       | `debugFlag`       | The JVM flag to use to connect a debugger.                                                          | See below. | May be left blank to not open a debugger connection.                                             |
+| Output Directory | `outputDirectory` | The directory under the server directory to which the runtime and agent should be extracted.        | `.hotswap` | The extracted runtime will be under `jbr/`, and the extracted agent will be `hotswap-agent.jar`. | 
+
+**Default value for debug flag: `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005`**
 
 **Default value for runtime**
 ```xml
@@ -109,7 +111,7 @@ This configuration is doing a few things:
     <type>jar</type>
 </agent>
 ```
-Both of these will be resolved from the `pluginRepositories` you have declared, as well as
+Both the runtime and agent will be resolved from the `pluginRepositories` you have declared, as well as
 from Maven Central (https://repo.maven.apache.org/maven2/) and Itemis Cloud MPS (https://artifacts.itemis.cloud/repository/maven-mps/).
 
 # Customising Flags
