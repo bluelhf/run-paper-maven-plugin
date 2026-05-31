@@ -9,27 +9,36 @@ Run Paper was inspired by
 - [garrus-de/minecraft-server-plugin](https://github.com/garrus-de/minecraft-server-plugin)
 
 ## Usage
-To use Run Paper, first add the following repository to your POM:
-```xml
-<pluginRepositories>
-    <pluginRepository>
-        <id>kiputyttö-releases</id>
-        <name>Ilari's Project Repository</name>
-        <url>https://maven.lhf.blue/releases</url>
-    </pluginRepository>
-</pluginRepositories>
-```
-Then, add this plugin declaration to your POM
-```xml
-<plugin>
-    <groupId>blue.lhf</groupId>
-    <artifactId>run-paper-maven-plugin</artifactId>
-    <version>1.2.1</version>
-    <configuration>
-        <!-- See below for the configuration to put here -->
-    </configuration>
-</plugin>
-```
+1. To use Run Paper, first add the following repository to your POM:
+    ```xml
+    <pluginRepositories>
+        <pluginRepository>
+            <id>kiputyttö-releases</id>
+            <name>Ilari's Project Repository</name>
+            <url>https://maven.lhf.blue/releases</url>
+        </pluginRepository>
+    </pluginRepositories>
+    ```
+2. Then, add this plugin declaration to your POM
+    ```xml
+    <plugin>
+        <groupId>blue.lhf</groupId>
+        <artifactId>run-paper-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <configuration>
+            <!-- See below for the configuration to put here -->
+        </configuration>
+    </plugin>
+    ```
+3. Fill in the values for your configuration from [Configuration](#Configuration)
+4. Then, to download the server, compile your plugin and start the server, run
+    ```shell
+    $ mvn run-paper:install verify run-paper:run-server
+    ```
+
+> [!TIP]
+> If `run-paper:install` detects that you have already downloaded the server, it won't
+> download the files again. To force a new installation, delete the server files (by default, `mvn clean` works)
 
 ## Configuration
 By default, Run Paper does not **work**. For it to work properly, a
