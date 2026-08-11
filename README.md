@@ -46,16 +46,16 @@ Minecraft version must be provided. Additionally, Minecraft's end-user licence
 agreement (EULA) must be accepted.
 
 Here's an example configuration. **Only use it if you AGREE to the [EULA](https://www.minecraft.net/en-us/eula)!**
-<!-- VERSION-REPLACE 26.1.2 -->
+<!-- VERSION-REPLACE 26.2 -->
 ```xml
-<minecraftVersion>26.1.2</minecraftVersion>
+<minecraftVersion>26.2</minecraftVersion>
 <acceptEula>true</acceptEula>
 <serverDirectory>run</serverDirectory>
 <hotswap>true</hotswap>
 ```
 <!-- /VERSION-REPLACE -->
 This configuration is doing a few things:
-1. It chooses the Minecraft version <!-- VERSION-REPLACE 26.1.2 -->26.1.2<!-- /VERSION-REPLACE -->.
+1. It chooses the Minecraft version <!-- VERSION-REPLACE 26.2 -->26.2<!-- /VERSION-REPLACE -->.
 2. It accepts the end-user licence agreement.
 3. It tells Run Paper to put the server in the `run/` directory.
 4. It enables **hot-swapping**.
