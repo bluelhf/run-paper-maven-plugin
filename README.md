@@ -1,3 +1,6 @@
+![Last commit badge](https://img.shields.io/github/last-commit/bluelhf/run-paper-maven-plugin?color=%23fefefe)
+[![Latest version badge](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.lhf.blue%2Freleases%2Fblue%2Flhf%2Frun-paper-maven-plugin%2Fmaven-metadata.xml&color=%23fefefe)](http://maven.lhf.blue/api/maven/latest/file/releases/blue/lhf/run-paper-maven-plugin)
+
 <img align="right" src=".github/assets/logo.svg" width="20%"></img>
 # Run Paper
 Run Paper is a Maven plugin for running [PaperMC/Paper](https://github.com/PaperMC/Paper) servers.
