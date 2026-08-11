@@ -61,9 +61,12 @@ void main(final String... args) throws IOException {
         final int replaceStarter = file.indexOf(REPLACE_START, readCursor, commentEnd);
         if (replaceStarter != -1) {
             final String oldVersion = file.substring(replaceStarter + REPLACE_START.length(), commentEnd).trim();
-            replacementStack.push(oldVersion);
-
-            err.printf("  .. starting replacement block on line %d for %s -> %s%n", lineNumber, oldVersion, newVersion);
+            if (oldVersion.isBlank()) {
+                err.printf("  .. ignoring replacement block on line %d because the original version is empty%n", lineNumber);
+            } else {
+                replacementStack.push(oldVersion);
+                err.printf("  .. starting replacement block on line %d for %s -> %s%n", lineNumber, oldVersion, newVersion);
+            }
         }
     }
     writer.write(file.substring(writeCursor).transform(replacer));
